@@ -1,8 +1,9 @@
 import { useEffect } from "react";
-import { StyleSheet, View, Image, Text, Dimensions } from "react-native";
+import { StyleSheet, View, Image, Text} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { PrimaryButton } from "../components/PrimaryButton";
 import Title from "../components/Title";
+import Player from "../components/Player";
 import { Colors } from "../tools/colors";
 
 let mine = 0,
@@ -26,7 +27,6 @@ export function GameOverScreen({ roundsNumber, onResult, onRestart }) {
 
 	const text = mine === 3 || alien === 3 ? "Start New Game" : "Next Step",
 		  url = mine === 3 ? require("../assets/images/success.png") : alien === 3 ? require("../assets/images/hanging-sloth.png") : require("../assets/images/compass.png"),
-		  top = !roundsNumber && deviceHeight >= 640 ? '24.5%' : !roundsNumber && deviceHeight < 640 ? "22.5%" : styles.balls.top,
 		  borderWidth =  alien !== 3 ? 3 : 5,
 		  borderColor = mine === 3 ? '#fff' : alien === 3 ? '#55402b' : 'transparent',
 		  backgroundColor = alien === 3 ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
@@ -37,9 +37,11 @@ export function GameOverScreen({ roundsNumber, onResult, onRestart }) {
 	return (
 		<View style={styles.screen}>
 			{roundsNumber && <Title style={styles.title}>{onResult}</Title>}
-			<Title withoutBorder={[styles.next_title, { color: color, marginBottom }]}>{score}</Title>
-			<Player data={myArr} style={[styles.position_a, {top}]}/>
-			<Player data={oppArr} style={[styles.position_b, {top}]}/>
+			<View style={styles.scoring}>
+				<Player data={myArr} style={styles.position_a}/>
+				<Title withoutBorder={[styles.next_title, { color: color, marginBottom }]}>{score}</Title>
+				<Player data={oppArr} style={styles.position_b}/>
+			</View>
 			<View style={[styles.imageContainer, {borderWidth, borderColor}]}>
 				<Image source={url} style={[styles.image, {backgroundColor}]} />
 			</View>
@@ -52,8 +54,6 @@ export function GameOverScreen({ roundsNumber, onResult, onRestart }) {
 		</View>
 	);
 }
-
-const deviceHeight = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
 	screen: {
@@ -95,26 +95,17 @@ const styles = StyleSheet.create({
 		fontFamily: "pt-mono",
 		color: Colors.primary500,
 	},
-	balls: {
-		position: "absolute",
-		top: deviceHeight < 640 ? "29%" : "31%",
-		flexDirection: "row"
+	scoring: {
+		width: "100%",
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "baseline"
 	},
 	position_a: {
-		left: 25
+		justifyContent: "flex-end"
 	},
 	position_b: {
-		right: 25
+		justifyContent: "flex-start"
 	}
 });
-
-const Player = ({data, style}) => {
-	return (
-		<View style={[styles.balls, style]}>
-			{data.map((ball) => (
-				<Text key={Math.random()}>{ball}</Text>
-			))}
-		</View>
-	);
-};
 
